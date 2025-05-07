@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'  // Make sure Maven is configured in Jenkins under Global Tool Config
+        jdk 'JDK17'     // Make sure JDK is also configured
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'git@github.com:rafiimafif/Project2.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                SONAR_TOKEN = credentials('sonarqube-token') // Replace with your Jenkins credential ID
+            }
+            steps {
+                sh '''
+                mvn sonar:sonar \
+                  -Dsonar.projectKey=Project2 \
+                  -Dsonar.host.url=http://your-sonarqube-url \
+                  -Dsonar.login=$SONAR_TOKEN
+                '''
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+    }
+}
