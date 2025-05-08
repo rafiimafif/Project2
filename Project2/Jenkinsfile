@@ -2,14 +2,19 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven3'  // Make sure Maven is configured in Jenkins under Global Tool Config
-        jdk 'JDK17'     // Make sure JDK is also configured
+        maven 'Maven3'  // Ensure Maven is configured in Jenkins under Global Tool Config
+        jdk 'JDK17'     // Ensure JDK is configured in Jenkins under Global Tool Config
+    }
+
+    environment {
+        // You can specify other environment variables here if necessary
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'git@github.com:rafiimafif/Project2.git'
+                // Use Git credentials for accessing the repository
+                git credentialsId: 'github-ssh-key', url: 'git@github.com:rafiimafif/Project2.git'
             }
         }
 
